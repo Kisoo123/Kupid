@@ -286,19 +286,13 @@
      </div>
  </section>
 <script>
-
-
-$(document).ready(function() {
-    <%if (kakaoMember != null) {%>
-        var email = "<%= kakaoMember.getEmail() %>";
-        $('#inputEmail').attr('placeholder', email).val(email).prop('readonly', true);
-        $("button#btnEmail").css('display','none');
-    <%}%>
-});
-
-
-
-	
+	$(document).ready(function() {
+	    <%if (kakaoMember != null) {%>
+	        var email = "<%= kakaoMember.getEmail() %>";
+	        $('#inputEmail').attr('placeholder', email).val(email).prop('readonly', true);
+	        $("button#btnEmail").css('display','none');
+	    <%}%>
+	});
 	$("#name").keyup(e=>{
 		let target = e.target.value;
 		target = target.replace(/[^가-힣]/g, '');
@@ -354,25 +348,36 @@ $(document).ready(function() {
 		e.target.value = target;
 		//빈칸 입력 방지
 		if(e.target.value !== ""){
-		//중복검사
-		$.ajax({
-			url: "<%=request.getContextPath()%>/member/checkid.do",
-			type: "post",
-			data: {"id": target},
-			success: data=>{
-				console.dir(data);
-				$("#idResult").text("").addClass('p');
-				if(data==0){
-					$("#idResult").text("* 사용가능한 아이디입니다.").css("color","#c552ff");
-				} else if(data!=0){
-					$("#idResult").text("* 이미 사용중인 아이디입니다.").css("color","#ff5e5e");
-				} 
-			}
-		});
+			//디바운서 적용하여 서버 부하 방지
+			debouncer();
 		}else{
 			$("#nicknameResult").text("* 내용을 입력해주세요").css("color","gray");
 		}
 	});
+	const debouncer = ()=>{
+		return (e=>{
+			if(timeout){clearTimeout(timeout);}
+			timeout=setTimeout(()=>{
+				let timeout;
+				//중복검사
+				$.ajax({
+					url: "<%=request.getContextPath()%>/member/checkid.do",
+					type: "post",
+					data: {"id": target},
+					success: data=>{
+						console.dir(data);
+						$("#idResult").text("").addClass('p');
+						if(data==0){
+							$("#idResult").text("* 사용가능한 아이디입니다.").css("color","#c552ff");
+						} else if(data!=0){
+							$("#idResult").text("* 이미 사용중인 아이디입니다.").css("color","#ff5e5e");
+						} 
+					}
+				});
+			,2000);
+			});
+		});
+	};
 	$("#nickname").keyup(e=>{
 		console.log(e.target.value);
 		//정규식 활용한 문자열 필터링

@@ -107,7 +107,7 @@
 	            <li class="ms-3 my-1 fs-5">My KUPID</li>
 	            <li><a class="dropdown-item <%=pagenum==1?"active":""%>" href="<%=request.getContextPath()%>/mypage/myprofile.do?pagenum=1">내 프로필</a></li>
 	            <li><a class="dropdown-item <%=pagenum==2?"active":""%>" href="<%=request.getContextPath()%>/mypage/myinfo.do?pagenum=2">내 정보</a></li>
-	            <li><a class="dropdown-item <%=pagenum==3?"active":""%>" href="<%=request.getContextPath()%>/mypage/myprofile.do?pagenum=3">내 활동</a></li>
+	            <li><a class="dropdown-item <%=pagenum==3?"active":""%>" href="<%=request.getContextPath()%>/mypage/feedView.do?pagenum=3">내 활동</a></li>
 	            <%-- <li><a class="dropdown-item" href="<%=request.getContextPath()%>/mypage/myactivity.do?pagenum=4">내 문의</a></li> --%>
 	            <li><hr class="dropdown-divider"></li>
 	            <li><a class="dropdown-item" href="<%=request.getContextPath()%>/logout.do">로그아웃</a></li>

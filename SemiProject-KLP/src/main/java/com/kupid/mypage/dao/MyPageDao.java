@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.kupid.group.model.dto.GroupDto;
+import com.kupid.feed.model.dto.Feed;
 import com.kupid.member.model.dto.MemberDto;
 
 public class MyPageDao {
@@ -190,6 +190,45 @@ public class MyPageDao {
 			close(pstmt);
 		}
 		return result;
+	}
+	public List<Feed> selectMemberWroteFeedAll(Connection conn,int cPage,int numPerpage, int memberNo){
+		PreparedStatement pstmt=null;
+		ResultSet rs=null;
+		List<Feed> result=new ArrayList<>();
+		try {
+			pstmt=conn.prepareStatement(sql.getProperty("selectMemberWroteFeedAll"));
+			pstmt.setInt(1, memberNo);
+			pstmt.setInt(2, (cPage-1)*numPerpage+1);
+			pstmt.setInt(3, cPage*numPerpage);
+			rs=pstmt.executeQuery();
+			while(rs.next()) {
+				Feed f=getFeed(rs);
+				result.add(f);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}finally {
+			close(rs);
+			close(pstmt);
+		}
+		return result;
+	}
+	public static Feed getFeed(ResultSet rs) throws SQLException{
+		return Feed.builder()
+				.feedNo(rs.getInt("FEED_NO"))
+				.feedMemberName(rs.getString("MEMBER_NO"))
+				.feedWriterName(rs.getString("WRITER_NAME"))
+				.feedContent(rs.getString("CONTENT"))
+				.feedWriteDate(rs.getDate("WRITEDATE"))
+				.feedUpdateDate(rs.getDate("UPDATEDATE"))
+				.likes(rs.getInt("LIKES"))
+				.report(rs.getInt("REPORT"))
+				.filePath(rs.getString("FILE_PATH"))
+				.profileImgOriname(rs.getString("PROFILE_IMG_ORINAME"))
+				.commentCnt(rs.getInt("commentCnt"))
+				.groupNo(rs.getInt("GROUP_NO"))
+				.memberGrade(rs.getString("MEMBER_GRADE"))
+				.build();
 	}
 	public static MemberDto memberBuilder(ResultSet rs) throws SQLException {
 		return MemberDto.builder()

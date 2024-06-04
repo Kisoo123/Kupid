@@ -8,6 +8,7 @@ import static com.kupid.common.JDBCTemplate.rollback;
 import java.sql.Connection;
 import java.util.List;
 
+import com.kupid.feed.model.dto.Feed;
 import com.kupid.member.model.dto.MemberDto;
 import com.kupid.mypage.dao.MyPageDao;
 
@@ -70,6 +71,12 @@ public class MyPageService {
 		int result = dao.updateInfoAll(conn, id, name, newpw, phone, email, address, addressDetail);
 		if(result>0) commit(conn);
 		else rollback(conn);
+		close(conn);
+		return result;
+	}
+	public List<Feed> selectMemberWroteFeedAll(int cPage,int numPerpage, int memberNo){
+		Connection conn=getConnection();
+		List<Feed> result=dao.selectMemberWroteFeedAll(conn,cPage,numPerpage, memberNo);
 		close(conn);
 		return result;
 	}
