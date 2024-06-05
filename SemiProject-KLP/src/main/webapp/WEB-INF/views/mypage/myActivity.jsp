@@ -14,52 +14,39 @@
 	int memberNo = loginMember.getMemberNo();
 %>
 <body>
-    <div class="p-3">
-    	<h2 class="d-flex justify-content-center">내가 쓴 글</h2>
+    <div class="sticky-top z-1000 bgcolor-gra">
 	    <!-- <div class="artistSelectBox">
 		     <select class="artistSelect">
 		     	<option value="">전체보기</option>
 		     	<option value="아티스트">아티스트보기</option>
 		     </select>
 	    </div> -->
-	    <div class="d-flex justify-content-center gap-3 my-3">
-		    <button class="btn">포스트</button>
-		    <button class="btn">댓글</button>
+	    <div class="d-flex justify-content-center gap-4" style="height: 60px">
+		    <a class="d-flex align-items-center nav-font" id="nav-a1" href="#"><span class="fs-3 nav-now">POST</span></a>
+		    <a class="d-flex align-items-center nav-font"id="nav-a2" href="#"><span class="fs-3">COMMENT</span></a>
 	    </div>
     </div>
 
+   	<h2 class="p-3 d-flex justify-content-center mb-5 mt-3" id="title"></h2>
     <div id="result"></div>
     <div class="container" id="container"></div>  
 </body>
 <style>
-.btn {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0px auto;
-  width: 100px;
-  max-width: 100%;
-  color: black;
-  text-align: center;
-  background-color: #d1ade3;
-  border-radius: 8px;
-  padding: 8px 8px 8px 8px;
-  height: 35px;
+.nav-now{
+	color: #735a9d;
+	text-decoration: underline;
 }
- .btn2 {
-   position: relative;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   min-width: 75px;
-   color: black;
-   text-align: center;
-   background-color: #d1ade3;
-   border-radius: 8px;
-   padding: 4px 8px 4px 8px;
-   border: none;
-   height: 30px;
+.nav-font{
+	text-decoration: none;
+	color: gray;
+	letter-spacing: -1px;
+}
+.nav-font:hover{
+	cursor: pointer;
+	color: #735a9d;
+}
+.bgcolor-gra{
+	background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
 }
 .artistSelectBox{
     display: flex;
@@ -148,7 +135,7 @@
   transform: translateY(-8px) rotate(-45deg);background-color: black;
 }
 
-  .textarea-container {
+.textarea-container {
     display: flex;
     justify-content: center;
     margin: 10px 0;
@@ -467,14 +454,19 @@ a.next:hover, a.prev:hover {
 }
 
 .textArea {
-  width: 300px;
-  height: 80px;
-  font-size: 18px;
-  resize: none;
-  color: black;
-  border: none;
-  border-bottom: 2px solid #0000007e;
-  outline: none;
+    background-color: #0000;
+    border: none;
+    color: #111;
+    font-size: 16px;
+    line-height: 22px;
+    resize: none;
+    vertical-align: top;
+    height: 24px !important;
+    width: 80%;
+    margin-left: -90px;
+}
+div#textareadiv:hover{
+	background-color: #dadcdd !important;
 }
 </style>
 <script>
@@ -504,6 +496,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 //피드 페이지 불러오기
 const loadPage = () => {
+	$("#title").text('내가 쓴 글');
     $.ajax({
         type: "POST",
         url: "<%=request.getContextPath()%>/mypage/InfiniteScroll.do",
@@ -572,7 +565,7 @@ const loadPage = () => {
 	                        initializeCarousel(img_list);
 	                    }
 	
-	                    const $footer = $('<div>').addClass('board-footer');
+	                    const $footer = $('<div>').addClass('board-footer ms-4');
 	
 	                    checkLikes(element.feedNo, function(data) {
 	                        if (data == "true") {
@@ -736,17 +729,20 @@ $(document).on("click", "a.comment", function(e) {
     if (existingDiv.length === 0) { // 기존에 댓글 입력창이 없으면 새로 생성
         const newDiv = $("<div>").addClass('comment-container')
         ;
-        const commentBt = $("<button>").text("등록").addClass('commentBt');
-        const innerDiv = $("<div>");
-        const textArea = $("<textarea>").css("width", "80%").addClass('textArea');
+    	//css추가
+        const commentBt = $("<button>").css('margin-right', '-110px').addClass('btn').html('<img width="25px" src="<%=request.getContextPath()%>/image/icon/submission-3-48.png">');
+        //댓글 작성창 css추가
+        const innerDiv = $("<div>").addClass('d-flex align-items-center justify-content-center my-3 gap-5 bg-body-secondary rounded-4 py-1').attr('id','textareadiv');
+        //style css 변경 및 placeholder추가
+        const textArea = $("<textarea>").addClass('textArea').attr('placeholder','댓글을 입력하세요.');
 
+	    newDiv.append($("<hr>"));
         innerDiv.append(textArea);
         innerDiv.append(commentBt);
         newDiv.append(innerDiv);
         $footer.after(newDiv);
-
-
         selectComment(feedNoText);
+        
     } else { // 기존에 댓글 입력창이 있으면 토글
         existingDiv.toggle();
     }
@@ -799,14 +795,16 @@ const selectComment = (feedNoText) => {
             "feedNo": feedNoText
         },
         success: function(data) {
-            const $commentContainer = $('input.feedNo[value="' + feedNoText + '"]').closest('.board').find('.comment-container');
+            const $commentContainer = $('input.feedNo[value="' + feedNoText + '"]').closest('.board').find('.comment-container')
+            							.addClass('pt-2 px-5');
          
             $commentContainer.find('.comment-item').remove();
 
             $.each(data, function(idx, element) {
+            	//기존 댓글창 css 추가
                 const $commentDiv = $("<div>").css({
                     "border-bottom": "1px solid #aba7a7",
-                    "width": "800px",
+                    "width": "700px",
                     'overflow': 'hidden',
                     'padding-bottom': '10px'
                 }).addClass("comment-item");
@@ -823,11 +821,13 @@ const selectComment = (feedNoText) => {
                 $commentInfoContainer.append('<div style="margin-right: 10px;">' + element.memberId + '</div>');
                 $commentInfoContainer.append('<div>' + element.replyDate + '</div>');
                 $commentDiv.append($commentInfoContainer);
-                $commentDiv.append('<div class="replyContent">' + element.replyContent + '</div>');
+                //css추가
+                $commentDiv.append('<div class="replyContent py-2 mx-2">' + element.replyContent + '</div>');
 				
                 if (<%=loginMember.getMemberNo()%> == element.memberNo) {
-                    $commentDiv.append('<br><a class="deleteBt">삭제</a>');
-                    $commentDiv.append('<a class="updateBt">수정</a>');
+                	//css 추가
+                    $commentDiv.append('<button class="updateBt btn btn-sm">수정</button>');
+                    $commentDiv.append('<button class="deleteBt btn btn-sm">삭제</button>');
                 }
                 
                 $commentContainer.append($commentDiv);

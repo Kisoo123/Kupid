@@ -99,7 +99,7 @@
 	            <img src="<%=request.getContextPath()%>/upload/member/profile/<%=loginMember.getProfileImgOriname() %>" alt="mdo" width="32" height="32" class="rounded-circle mb-1">
 				<%=loginMember.getMemberName()%>
 	          </a>
-	          <ul class="dropdown-menu text-small">
+	          <ul class="dropdown-menu text-small sticky-top" style="z-index: 2000">
 	          	<%if(loginMember.getMemberId().equals("admin")){%>
 	          		<li><a class="dropdown-item" href="<%=request.getContextPath()%>/manager/home.do">관리자페이지</a></li>
 	            	<li><hr class="dropdown-divider"></li>
